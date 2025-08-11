@@ -1,0 +1,202 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /**
+   * Tailwind CSS theme with Arabic-focused color scheme
+   * tailwind.config.ts expects the following color variables to be expressed as HSL values.
+   */
+  :root {
+    --background: 248 100% 99%;
+    --foreground: 220 20% 15%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 220 20% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 20% 15%;
+
+    --primary: 210 85% 45%;
+    --primary-foreground: 0 0% 98%;
+
+    --secondary: 210 15% 95%;
+    --secondary-foreground: 220 20% 25%;
+
+    --muted: 210 15% 96%;
+    --muted-foreground: 220 10% 45%;
+
+    --accent: 195 100% 50%;
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 75% 55%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 210 15% 90%;
+    --input: 210 15% 94%;
+    --ring: 210 85% 45%;
+
+    --success: 140 70% 45%;
+    --success-foreground: 0 0% 98%;
+
+    --warning: 45 95% 55%;
+    --warning-foreground: 0 0% 10%;
+
+    --voice-active: 140 70% 50%;
+    --voice-inactive: 210 10% 70%;
+    --voice-listening: 195 100% 50%;
+    --voice-processing: 270 70% 60%;
+
+    --radius: 0.75rem;
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 220 25% 8%;
+    --foreground: 210 20% 90%;
+
+    --card: 220 20% 10%;
+    --card-foreground: 210 20% 90%;
+
+    --popover: 220 20% 10%;
+    --popover-foreground: 210 20% 90%;
+
+    --primary: 210 85% 55%;
+    --primary-foreground: 220 25% 8%;
+
+    --secondary: 220 15% 15%;
+    --secondary-foreground: 210 20% 85%;
+
+    --muted: 220 15% 12%;
+    --muted-foreground: 210 15% 65%;
+
+    --accent: 195 100% 60%;
+    --accent-foreground: 220 25% 8%;
+
+    --destructive: 0 75% 60%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 220 15% 18%;
+    --input: 220 15% 15%;
+    --ring: 210 85% 55%;
+
+    --success: 140 70% 55%;
+    --success-foreground: 0 0% 98%;
+
+    --warning: 45 95% 65%;
+    --warning-foreground: 0 0% 10%;
+
+    --voice-active: 140 70% 60%;
+    --voice-inactive: 210 15% 50%;
+    --voice-listening: 195 100% 60%;
+    --voice-processing: 270 70% 70%;
+
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    direction: rtl;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Noto Sans Arabic', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-feature-settings: 'liga', 'kern';
+  }
+
+  /* Arabic typography improvements */
+  .arabic-text {
+    line-height: 1.8;
+    letter-spacing: 0.02em;
+  }
+
+  /* Voice control animations */
+  @keyframes pulse-voice {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.1); opacity: 0.8; }
+  }
+
+  @keyframes wave-animation {
+    0% { transform: scaleY(1); }
+    50% { transform: scaleY(1.5); }
+    100% { transform: scaleY(1); }
+  }
+
+  .pulse-voice {
+    animation: pulse-voice 1.5s ease-in-out infinite;
+  }
+
+  .wave-animation {
+    animation: wave-animation 0.5s ease-in-out infinite;
+  }
+
+  /* RTL-specific utilities */
+  .rtl-flip {
+    transform: scaleX(-1);
+  }
+
+  /* Custom scrollbar for Arabic content */
+  .arabic-scroll::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  .arabic-scroll::-webkit-scrollbar-track {
+    background: hsl(var(--muted));
+    border-radius: 3px;
+  }
+  
+  .arabic-scroll::-webkit-scrollbar-thumb {
+    background: hsl(var(--border));
+    border-radius: 3px;
+  }
+  
+  .arabic-scroll::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground));
+  }
+}
+
+@layer components {
+  /* Voice status indicators */
+  .voice-status-dot {
+    @apply w-3 h-3 rounded-full;
+  }
+  
+  .voice-status-inactive {
+    @apply bg-slate-400;
+  }
+  
+  .voice-status-listening {
+    @apply bg-blue-500 pulse-voice;
+  }
+  
+  .voice-status-processing {
+    @apply bg-purple-500 pulse-voice;
+  }
+  
+  .voice-status-active {
+    @apply bg-green-500 pulse-voice;
+  }
+}
