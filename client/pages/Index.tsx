@@ -469,45 +469,75 @@ export default function Index() {
                 console.log('Exact target found at:', targetIndex);
               } else {
                 // Advanced: Check if this is a "between X and Y" command
-                // Extract command pattern and look for both words
-                const betweenPattern = /بين\s+(.+?)\s+و\s*(.+?)(?:\s|$)/;
-                const match = analysis.explanation?.match(betweenPattern);
+              // Look for patterns in original command or explanation
+              const betweenPatterns = [
+                /بين\s+كلمة\s+(.+?)\s+وكلمة\s+(.+?)\s+(?:اكتب|أضف|ضع)\s+(?:كلمة\s+)?(.+?)(?:\s|$)/,
+                /بين\s+(.+?)\s+و\s*(.+?)(?:\s|$)/
+              ];
 
-                if (match) {
-                  const word1 = match[1].replace(/كلمة\s+/, '').trim();
-                  const word2 = match[2].replace(/كلمة\s+/, '').trim();
+              let betweenMatch = null;
+              for (const pattern of betweenPatterns) {
+                betweenMatch = analysis.explanation?.match(pattern) ||
+                              lastCommand?.match(pattern);
+                if (betweenMatch) break;
+              }
 
-                  console.log('Detected "between" command:', word1, 'and', word2);
+              if (betweenMatch) {
+                let word1, word2, contentToAdd;
 
-                  const word1Index = documentContent.indexOf(word1);
-                  const word2Index = documentContent.indexOf(word2);
-
-                  if (word1Index !== -1 && word2Index !== -1) {
-                    // Insert between the two words
-                    let insertPos;
-                    if (word1Index < word2Index) {
-                      // word1 comes first, insert after word1
-                      insertPos = word1Index + word1.length;
-                    } else {
-                      // word2 comes first, insert after word2
-                      insertPos = word2Index + word2.length;
-                    }
-
-                    const charAtInsert = documentContent.charAt(insertPos);
-                    const needsSpace = charAtInsert !== '' && charAtInsert !== ' ' && charAtInsert !== '\n';
-                    const spaceAfter = needsSpace ? ' ' : '';
-
-                    newContent =
-                      documentContent.slice(0, insertPos) +
-                      ' ' + analysis.content + spaceAfter +
-                      documentContent.slice(insertPos);
-                    targetFound = true;
-
-                    console.log('Between insertion completed at position:', insertPos);
-                  } else {
-                    console.log('One or both words not found:', word1, word2Index !== -1, word2, word1Index !== -1);
-                  }
+                if (betweenMatch.length >= 4) {
+                  // Full pattern with content extraction
+                  word1 = betweenMatch[1].trim();
+                  word2 = betweenMatch[2].trim();
+                  contentToAdd = betweenMatch[3].trim();
+                } else {
+                  // Simple pattern, use analysis content
+                  word1 = betweenMatch[1].replace(/كلمة\s+/, '').trim();
+                  word2 = betweenMatch[2].replace(/كلمة\s+/, '').trim();
+                  contentToAdd = analysis.content;
                 }
+
+                // Clean content - remove "كلمة" prefix if exists
+                contentToAdd = contentToAdd?.replace(/^كلمة\s+/, '').trim();
+
+                console.log('🎯 كشف أمر "بين":', {word1, word2, contentToAdd});
+
+                const word1Index = documentContent.indexOf(word1);
+                const word2Index = documentContent.indexOf(word2);
+
+                if (word1Index !== -1 && word2Index !== -1) {
+                  // Find the logical position between the words
+                  let insertPos;
+
+                  if (word1Index < word2Index) {
+                    // word1 comes first in text, insert after word1
+                    insertPos = word1Index + word1.length;
+                    console.log(`📍 ${word1} يأتي قبل ${word2} - الإدراج بعد ${word1}`);
+                  } else {
+                    // word2 comes first in text, insert after word2
+                    insertPos = word2Index + word2.length;
+                    console.log(`📍 ${word2} يأتي قبل ${word1} - الإدراج بعد ${word2}`);
+                  }
+
+                  const charAtInsert = documentContent.charAt(insertPos);
+                  const needsSpace = charAtInsert !== '' && charAtInsert !== ' ' && charAtInsert !== '\n';
+                  const spaceAfter = needsSpace ? ' ' : '';
+
+                  newContent =
+                    documentContent.slice(0, insertPos) +
+                    ' ' + contentToAdd + spaceAfter +
+                    documentContent.slice(insertPos);
+                  targetFound = true;
+
+                  console.log('✅ نجح الإدراج بين الكلمات في الموضع:', insertPos);
+                  console.log('📄 النتيجة:', newContent);
+                } else {
+                  console.log('❌ لم توجد إحدى الكلمتين:', {
+                    word1, word1Found: word1Index !== -1,
+                    word2, word2Found: word2Index !== -1
+                  });
+                }
+              }
 
                 // If still not found, try partial word matching
                 if (!targetFound) {
@@ -1069,7 +1099,7 @@ export default function Index() {
                       <div className="flex flex-wrap gap-1">
                         {[
                           "استبدل كلمة بسم بكلمة باسم",
-                          "غير كلمة الله إلى الله تعالى"
+                          "غي�� كلمة الله إلى الله تعالى"
                         ].map((cmd, idx) => (
                           <Button
                             key={idx}
