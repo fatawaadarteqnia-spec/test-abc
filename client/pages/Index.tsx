@@ -448,25 +448,97 @@ export default function Index() {
           case 'after':
             if (analysis.target && analysis.target !== 'start' && analysis.target !== 'end') {
               console.log('Looking for target:', analysis.target, 'in document:', documentContent);
+
+              // Smart target detection - handle complex insertion commands
+              let targetFound = false;
+              let newContent = documentContent;
+
+              // First try exact match
               const targetIndex = documentContent.indexOf(analysis.target);
               if (targetIndex !== -1) {
                 const insertIndex = targetIndex + analysis.target.length;
-
-                // Check if we need to add space before the new content
                 const charAfterTarget = documentContent.charAt(insertIndex);
                 const needsSpace = charAfterTarget !== '' && charAfterTarget !== ' ' && charAfterTarget !== '\n';
                 const spaceAfter = needsSpace ? ' ' : '';
 
-                const newContent =
+                newContent =
                   documentContent.slice(0, insertIndex) +
                   ' ' + analysis.content + spaceAfter +
                   documentContent.slice(insertIndex);
-                setDocumentContent(newContent);
+                targetFound = true;
+                console.log('Exact target found at:', targetIndex);
+              } else {
+                // Advanced: Check if this is a "between X and Y" command
+                // Extract command pattern and look for both words
+                const betweenPattern = /بين\s+(.+?)\s+و\s*(.+?)(?:\s|$)/;
+                const match = analysis.explanation?.match(betweenPattern);
 
-                console.log('Content updated. Target found at:', targetIndex, 'New content:', newContent);
+                if (match) {
+                  const word1 = match[1].replace(/كلمة\s+/, '').trim();
+                  const word2 = match[2].replace(/كلمة\s+/, '').trim();
+
+                  console.log('Detected "between" command:', word1, 'and', word2);
+
+                  const word1Index = documentContent.indexOf(word1);
+                  const word2Index = documentContent.indexOf(word2);
+
+                  if (word1Index !== -1 && word2Index !== -1) {
+                    // Insert between the two words
+                    let insertPos;
+                    if (word1Index < word2Index) {
+                      // word1 comes first, insert after word1
+                      insertPos = word1Index + word1.length;
+                    } else {
+                      // word2 comes first, insert after word2
+                      insertPos = word2Index + word2.length;
+                    }
+
+                    const charAtInsert = documentContent.charAt(insertPos);
+                    const needsSpace = charAtInsert !== '' && charAtInsert !== ' ' && charAtInsert !== '\n';
+                    const spaceAfter = needsSpace ? ' ' : '';
+
+                    newContent =
+                      documentContent.slice(0, insertPos) +
+                      ' ' + analysis.content + spaceAfter +
+                      documentContent.slice(insertPos);
+                    targetFound = true;
+
+                    console.log('Between insertion completed at position:', insertPos);
+                  } else {
+                    console.log('One or both words not found:', word1, word2Index !== -1, word2, word1Index !== -1);
+                  }
+                }
+
+                // If still not found, try partial word matching
+                if (!targetFound) {
+                  const words = analysis.target.split(' ');
+                  for (const word of words) {
+                    if (word.length > 2) {
+                      const wordIndex = documentContent.indexOf(word);
+                      if (wordIndex !== -1) {
+                        const insertIndex = wordIndex + word.length;
+                        const charAfterTarget = documentContent.charAt(insertIndex);
+                        const needsSpace = charAfterTarget !== '' && charAfterTarget !== ' ' && charAfterTarget !== '\n';
+                        const spaceAfter = needsSpace ? ' ' : '';
+
+                        newContent =
+                          documentContent.slice(0, insertIndex) +
+                          ' ' + analysis.content + spaceAfter +
+                          documentContent.slice(insertIndex);
+                        targetFound = true;
+                        console.log('Partial match found for word:', word, 'at:', wordIndex);
+                        break;
+                      }
+                    }
+                  }
+                }
+              }
+
+              if (targetFound) {
+                setDocumentContent(newContent);
+                console.log('Content updated successfully:', newContent);
               } else {
                 console.log('Target not found:', analysis.target, 'Adding at end instead');
-                // Target not found, show warning and add at end
                 toast({
                   title: "⚠️ لم أجد الهدف",
                   description: `لم أجد "${analysis.target}" في النص. تم الإضافة في النهاية بدلاً من ذلك.`,
@@ -926,7 +998,7 @@ export default function Index() {
                         ) : (
                           <>
                             <Play className="w-4 h-4 ml-1" />
-                            تنفيذ الأمر
+                            تنف��ذ الأمر
                           </>
                         )}
                       </Button>
