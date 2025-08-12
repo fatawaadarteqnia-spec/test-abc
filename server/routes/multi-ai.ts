@@ -195,7 +195,7 @@ function getEnhancedSystemPrompt(): string {
 - فقط نفذ ما يطلبه المستخدم بالضبط
 - احترم رغبة المستخدم حتى لو بدت غريبة
 
-## 🎯 أمثلة للتحليل العميق:
+## 🎯 ��مثلة للتحليل العميق:
 
 ### مثال 1: نص عادي (ليس أمر)
 **النص**: "الحمد لله رب العالمين الرحمن الرحيم"
@@ -221,7 +221,7 @@ function getEnhancedSystemPrompt(): string {
 - position: "after"
 
 ### مثال 3: أمر غير مباشر معقد
-**النص**: "أريد أن أرى كلمة البركة في بداية النص وأيضاً ��لمة الخير في نه��يته"
+**النص**: "أريد أن أرى كلمة البركة في بداية النص و��يضاً ��لمة الخير في نه��يته"
 **التحليل العميق**:
 1. **قراءة شاملة**: طلب معقد بأمرين منفصلين
 2. **تحليل اللغة**: "أريد أن أرى" = طلب غير مباشر للإضافة
@@ -263,7 +263,7 @@ function getEnhancedSystemPrompt(): string {
 
 ## 🧠 قواعد الذكاء المتقدم:
 1. **اقرأ النص 3 مرات** قبل اتخاذ القرار
-2. **فكر بصوت عالٍ** في الـ thinking field
+2. **فكر بصوت ��الٍ** في الـ thinking field
 3. **ش��ّك في فهمك الأول** وأعد التحليل
 4. **ابحث عن الأوامر المخفية** في النصوص الطويلة
 5. **لا تتسرع** - الدقة أهم من السرعة
@@ -428,7 +428,7 @@ const SYSTEM_PROMPT = `أنت مساعد ذكي متخصص في تحل��ل �
   "isCommand": boolean,
   "commandType": "insert|delete|replace|format|control|null",
   "action": "وصف دقيق للعمل المطلوب",
-  "target": "الهدف المحدد (اختياري)",
+  "target": "الهدف المح��د (اختياري)",
   "content": "المحتوى المطلوب (اختياري)",
   "confidence": رقم من 0 إلى 1,
   "explanation": "شرح مختصر"
@@ -553,7 +553,7 @@ async function tryGroq(text: string, context?: string): Promise<CommandAnalysisR
 - لا تضع أي نص قبل أو بعد JSON
 - لا تستخدم markdown code blocks
 - ابدأ الاستجابة مباشرة بـ {
-- انته الاستجابة مباشرة بـ }
+- انته الا��تجابة مباشرة بـ }
 
 مثال للاستجابة المطلوبة:
 {
@@ -639,7 +639,7 @@ function preprocessComplexText(text: string, context?: string): { processedText:
 
   if (analysis.isLongText) {
     // For long texts, add structure hints
-    processedText = `[نص طويل - حلل بعناية]\n${text}\n[انتباه: ابحث عن الأوامر المدفونة في النص]`;
+    processedText = `[نص طويل - حلل بعناية]\n${text}\n[انتباه: ابحث ع�� الأوامر المدفونة في النص]`;
   }
 
   if (analysis.hasMultipleCommands) {
@@ -755,19 +755,39 @@ function detectCommandPatterns(text: string): {
 
 // Fallback analysis with enhanced intelligence
 function fallbackAnalysis(text: string): CommandAnalysisResponse {
+  console.log('🧠 بدء التحليل الذكي البديل للنص:', text);
+
+  // Use smart command detection
+  const detection = detectCommandPatterns(text);
+  console.log('🔍 نتائج كشف الأوامر:', detection);
+
+  // If likely not a command, treat as content
+  if (!detection.isLikelyCommand) {
+    return {
+      isCommand: false,
+      commandType: null,
+      action: 'إدراج محتوى',
+      content: text.trim(),
+      confidence: 1 - detection.confidence,
+      explanation: `نص عادي - ${detection.reasoning.join(', ')}`,
+      provider: 'التحليل الذكي البديل'
+    };
+  }
+
   const cleanText = text.toLowerCase().trim();
-  
-  // Delete commands
-  if (cleanText.includes('امسح') || cleanText.includes('احذف') || cleanText.includes('إزالة') || cleanText.includes('شيل')) {
+
+  // Enhanced delete commands
+  if (cleanText.includes('امس��') || cleanText.includes('احذف') || cleanText.includes('إزالة') || cleanText.includes('شيل')) {
+    // Try to find target
     if (cleanText.includes('آخر') || cleanText.includes('أخير')) {
       return {
         isCommand: true,
         commandType: 'delete',
-        action: 'حذف آخر فقرة',
+        action: 'حذف آخر عنصر',
         target: 'last',
-        confidence: 0.8,
-        explanation: 'تح��يل أساسي - حذف آخر عنصر',
-        provider: 'التحليل الأساس��'
+        confidence: Math.max(0.8, detection.confidence),
+        explanation: `حذف آخر عنصر - ${detection.reasoning.join(', ')}`,
+        provider: 'التحليل الذكي البديل'
       };
     }
     if (cleanText.includes('كل') || cleanText.includes('جميع')) {
@@ -776,14 +796,105 @@ function fallbackAnalysis(text: string): CommandAnalysisResponse {
         commandType: 'delete',
         action: 'حذف جميع المحتوى',
         target: 'all',
-        confidence: 0.9,
-        explanation: 'تحليل أساسي - حذف جميع ال��حتوى',
-        provider: 'التحليل الأساسي'
+        confidence: Math.max(0.9, detection.confidence),
+        explanation: `حذف شامل - ${detection.reasoning.join(', ')}`,
+        provider: 'التحليل الذكي البديل'
       };
     }
+
+    // Try to extract specific target
+    const words = text.split(' ');
+    const deleteIndex = words.findIndex(word =>
+      word.includes('احذف') || word.includes('امسح') || word.includes('ازل')
+    );
+
+    if (deleteIndex !== -1 && deleteIndex < words.length - 1) {
+      const target = words.slice(deleteIndex + 1).join(' ').trim();
+      if (target) {
+        return {
+          isCommand: true,
+          commandType: 'delete',
+          action: `حذف: ${target}`,
+          target: target,
+          confidence: Math.max(0.7, detection.confidence),
+          explanation: `حذف مستهدف - ${detection.reasoning.join(', ')}`,
+          provider: 'التحليل الذكي البديل'
+        };
+      }
+    }
   }
-  
-  // Format commands
+
+  // Enhanced insert commands
+  if (cleanText.includes('أضف') || cleanText.includes('ضع') || cleanText.includes('اكتب') ||
+      cleanText.includes('أريد') || cleanText.includes('أحتاج')) {
+
+    // Find position indicators
+    let position = 'end';
+    let target = '';
+
+    if (cleanText.includes('في البداية') || cleanText.includes('في الأول')) {
+      position = 'start';
+      target = 'start';
+    } else if (cleanText.includes('في النهاية') || cleanText.includes('في الآخر')) {
+      position = 'end';
+      target = 'end';
+    } else if (cleanText.includes('بعد')) {
+      position = 'after';
+      // Try to extract what comes after "بعد"
+      const afterMatch = text.match(/بعد\s+([^،.]+)/);
+      if (afterMatch) {
+        target = afterMatch[1].trim();
+      }
+    } else if (cleanText.includes('قبل')) {
+      position = 'before';
+      // Try to extract what comes after "قبل"
+      const beforeMatch = text.match(/قبل\s+([^،.]+)/);
+      if (beforeMatch) {
+        target = beforeMatch[1].trim();
+      }
+    }
+
+    // Try to extract content to add
+    let content = '';
+    const contentMatches = [
+      text.match(/(?:أضف|ضع|اكتب)\s+([^،.]+)/),
+      text.match(/(?:أريد|أحتاج)\s+(?:أن\s+)?(?:أرى|أضع|أكتب)\s+([^،.]+)/),
+      text.match(/كلمة\s+([^،.]+)/),
+      text.match(/نص\s+([^،.]+)/)
+    ];
+
+    for (const match of contentMatches) {
+      if (match && match[1]) {
+        content = match[1].trim();
+        break;
+      }
+    }
+
+    if (!content) {
+      // Extract anything after command words
+      const words = text.split(' ');
+      const cmdIndex = words.findIndex(word =>
+        word.includes('أضف') || word.includes('ضع') || word.includes('أريد')
+      );
+      if (cmdIndex !== -1) {
+        content = words.slice(cmdIndex + 1).join(' ').trim();
+      }
+    }
+
+    return {
+      isCommand: true,
+      commandType: 'insert',
+      action: `إضافة: ${content || 'محتوى'}`,
+      target: target || position,
+      content: content || text.trim(),
+      position: position,
+      confidence: Math.max(0.6, detection.confidence),
+      explanation: `إضافة محتوى - ${detection.reasoning.join(', ')}`,
+      provider: 'التحليل الذكي البديل'
+    };
+  }
+
+  // Enhanced format commands
   if (cleanText.includes('عنوان') || cleanText.includes('رأس')) {
     const content = text.replace(/.*عنوان/i, '').trim();
     return {
@@ -791,9 +902,9 @@ function fallbackAnalysis(text: string): CommandAnalysisResponse {
       commandType: 'format',
       action: 'إضافة عنوان',
       content: content || 'عنوان جديد',
-      confidence: 0.9,
-      explanation: 'تحليل أساسي - إضافة عنوان',
-      provider: 'التحليل الأساسي'
+      confidence: Math.max(0.9, detection.confidence),
+      explanation: `تنسيق عنوان - ${detection.reasoning.join(', ')}`,
+      provider: 'التحليل الذكي البديل'
     };
   }
   
@@ -1218,7 +1329,7 @@ export const testAPIKeyDirect: RequestHandler = async (req, res) => {
         return res.json({
           success: false,
           error: "لا توجد استجابة",
-          message: `${providerConfig.displayName} لم يرد بشكل صحيح`
+          message: `${providerConfig.displayName} لم يرد بش��ل صحيح`
         });
       }
 
