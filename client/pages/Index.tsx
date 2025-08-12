@@ -33,6 +33,7 @@ export default function Index() {
   const [selectedProvider, setSelectedProvider] = useState<string>('auto');
   const [testCommand, setTestCommand] = useState<string>('');
   const [showRequestDetails, setShowRequestDetails] = useState<boolean>(false);
+  const [showAdvancedAnalyzer, setShowAdvancedAnalyzer] = useState<boolean>(false);
   const [lastRequest, setLastRequest] = useState<any>(null);
   const [lastResponse, setLastResponse] = useState<any>(null);
 
@@ -674,7 +675,7 @@ export default function Index() {
               } else {
                 console.log('Target not found (before):', analysis.target, 'Adding at end instead');
                 toast({
-                  title: "⚠️ لم أجد الهدف",
+                  title: "⚠️ لم أجد اله��ف",
                   description: `لم أجد "${analysis.target}" في النص. تم الإضافة في النهاية بدلاً من ذلك.`,
                   variant: "destructive",
                 });
@@ -1299,7 +1300,7 @@ export default function Index() {
           <CardHeader>
             <CardTitle className="arabic-text flex items-center gap-2">
               <Brain className="w-5 h-5" />
-              دليل ��لأوامر الذكية
+              دليل الأوامر الذكية
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -1343,7 +1344,7 @@ export default function Index() {
                 <h4 className="font-semibold text-red-600">أو��مر التحكم</h4>
                 <ul className="space-y-1 text-gray-600 dark:text-gray-300">
                   <li>• "ت��قف" - إيقاف التسجيل</li>
-                  <li>• "استمرار" - وضع مست��ر</li>
+                  <li>• "استمرار" - وضع مستمر</li>
                   <li>• "خلاص" - إنهاء العملية</li>
                   <li>• "كفاية" - إيقاف</li>
                 </ul>
