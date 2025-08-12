@@ -7,6 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { CommandAnalysisRequest, CommandAnalysisResponse, AIError } from '@shared/ai-commands';
 import { MultiAIConfigDialog } from '@/components/MultiAIConfigDialog';
+import { DetailedRequestAnalyzer } from '@/components/DetailedRequestAnalyzer';
 
 type VoiceStatus = 'inactive' | 'listening' | 'processing' | 'active';
 
@@ -935,7 +936,7 @@ export default function Index() {
                         <div className="space-y-1">
                           <p><strong>النص:</strong> "{lastRequest.text}"</p>
                           <p><strong>السياق:</strong> "{lastRequest.context || 'لا يوجد'}"</p>
-                          <p><strong>��لمقدم:</strong> {lastRequest.selectedProvider}</p>
+                          <p><strong>المقدم:</strong> {lastRequest.selectedProvider}</p>
                         </div>
                       </div>
                     )}
@@ -1130,7 +1131,7 @@ export default function Index() {
                     <div className="flex items-center gap-1">
                       <div className={`w-2 h-2 rounded-full ${aiStatus === 'ready' ? 'bg-green-500' : 'bg-gray-400'}`}></div>
                       <span className="text-xs text-gray-500 arabic-text">
-                        {aiStatus === 'ready' ? 'AI جاه��' : 'AI غير متاح'}
+                        {aiStatus === 'ready' ? 'AI جاهز' : 'AI غير متاح'}
                       </span>
                     </div>
                   </div>
@@ -1298,7 +1299,7 @@ export default function Index() {
           <CardHeader>
             <CardTitle className="arabic-text flex items-center gap-2">
               <Brain className="w-5 h-5" />
-              دليل الأوامر الذكية
+              دليل ��لأوامر الذكية
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -1342,7 +1343,7 @@ export default function Index() {
                 <h4 className="font-semibold text-red-600">أو��مر التحكم</h4>
                 <ul className="space-y-1 text-gray-600 dark:text-gray-300">
                   <li>• "ت��قف" - إيقاف التسجيل</li>
-                  <li>• "استمرار" - وضع مستمر</li>
+                  <li>• "استمرار" - وضع مست��ر</li>
                   <li>• "خلاص" - إنهاء العملية</li>
                   <li>• "كفاية" - إيقاف</li>
                 </ul>
