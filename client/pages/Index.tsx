@@ -31,7 +31,10 @@ export default function Index() {
   const [providerStatus, setProviderStatus] = useState<any>(null);
   const [selectedProvider, setSelectedProvider] = useState<string>('auto');
   const [testCommand, setTestCommand] = useState<string>('');
-  
+  const [showRequestDetails, setShowRequestDetails] = useState<boolean>(false);
+  const [lastRequest, setLastRequest] = useState<any>(null);
+  const [lastResponse, setLastResponse] = useState<any>(null);
+
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const { toast } = useToast();
 
@@ -190,7 +193,7 @@ export default function Index() {
       console.log('Manual refresh failed:', error);
       toast({
         title: "فشل التحديث",
-        description: "لم يتمكن من تحديث ��لحالة - التطبيق يعمل في الوضع الأساسي",
+        description: "لم يتمكن من تحديث ��لحال�� - التطبيق يعمل في الوضع الأساسي",
         variant: "destructive",
       });
     }
@@ -1203,7 +1206,7 @@ export default function Index() {
               <p className="text-sm text-blue-800 dark:text-blue-200 arabic-text">
                 <Brain className="w-4 h-4 inline ml-1" />
                 <strong>مع الذكاء الاص��ناعي:</strong> يمكنك استخدام أي صياغة طبيعية باللغة العربية.
-                النظام ��يفهم مقصدك ويحلل الأمر بذكاء.
+                النظام ��يف��م مقصدك ويحلل الأمر بذكاء.
               </p>
             </div>
 
