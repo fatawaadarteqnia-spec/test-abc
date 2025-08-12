@@ -909,6 +909,70 @@ export default function Index() {
                 )}
               </Badge>
 
+              {/* Request/Response Debug Panel */}
+              <div className="border rounded-lg p-3 bg-gray-50 dark:bg-gray-900">
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="text-sm font-semibold arabic-text flex items-center gap-2">
+                    <Brain className="w-4 h-4" />
+                    🔍 تفاصيل التحليل
+                  </h3>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowRequestDetails(!showRequestDetails)}
+                    className="arabic-text text-xs"
+                  >
+                    {showRequestDetails ? 'إخفاء' : 'عرض'}
+                  </Button>
+                </div>
+
+                {showRequestDetails && (
+                  <div className="space-y-3">
+                    {/* Last Request */}
+                    {lastRequest && (
+                      <div className="border rounded p-2 bg-blue-50 dark:bg-blue-900/20 text-xs">
+                        <h5 className="font-medium mb-1 arabic-text text-blue-700 dark:text-blue-300">📤 الطلب المرسل:</h5>
+                        <div className="space-y-1">
+                          <p><strong>النص:</strong> "{lastRequest.text}"</p>
+                          <p><strong>السياق:</strong> "{lastRequest.context || 'لا يوجد'}"</p>
+                          <p><strong>��لمقدم:</strong> {lastRequest.selectedProvider}</p>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Last Response */}
+                    {lastResponse && (
+                      <div className={`border rounded p-2 text-xs ${
+                        lastResponse.error ? 'bg-red-50 dark:bg-red-900/20' : 'bg-green-50 dark:bg-green-900/20'
+                      }`}>
+                        <h5 className={`font-medium mb-1 arabic-text ${
+                          lastResponse.error ? 'text-red-700 dark:text-red-300' : 'text-green-700 dark:text-green-300'
+                        }`}>
+                          {lastResponse.error ? '❌ خطأ:' : '✅ الاستجابة:'}
+                        </h5>
+                        <div className="space-y-1">
+                          {lastResponse.error ? (
+                            <p>{lastResponse.error}</p>
+                          ) : lastResponse.result && (
+                            <>
+                              <p><strong>نوع:</strong> {lastResponse.result.commandType || 'نص عادي'}</p>
+                              <p><strong>هدف:</strong> {lastResponse.result.target || 'غير محدد'}</p>
+                              <p><strong>محتوى:</strong> {lastResponse.result.content || 'غير محدد'}</p>
+                              <p><strong>ثقة:</strong> {Math.round((lastResponse.result.confidence || 0) * 100)}%</p>
+                              <p><strong>مقدم:</strong> {lastResponse.result.provider}</p>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {!lastRequest && !lastResponse && (
+                      <p className="text-center text-gray-500 arabic-text text-xs">قل أو اكتب شيئاً لرؤية التفاصيل</p>
+                    )}
+                  </div>
+                )}
+              </div>
+
               <MultiAIConfigDialog
                 aiStatus={providerStatus}
                 selectedProvider={selectedProvider}
@@ -1066,7 +1130,7 @@ export default function Index() {
                     <div className="flex items-center gap-1">
                       <div className={`w-2 h-2 rounded-full ${aiStatus === 'ready' ? 'bg-green-500' : 'bg-gray-400'}`}></div>
                       <span className="text-xs text-gray-500 arabic-text">
-                        {aiStatus === 'ready' ? 'AI جاهز' : 'AI غير متاح'}
+                        {aiStatus === 'ready' ? 'AI جاه��' : 'AI غير متاح'}
                       </span>
                     </div>
                   </div>
