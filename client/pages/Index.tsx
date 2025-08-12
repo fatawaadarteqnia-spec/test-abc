@@ -404,10 +404,33 @@ export default function Index() {
         } catch (parseError) {
           console.warn('Failed to parse error response');
         }
+
+        // Save error response
+        const errorResponse = {
+          timestamp: new Date().toISOString(),
+          status: response.status,
+          error: errorMessage,
+          request: requestDetails
+        };
+        setLastResponse(errorResponse);
+        console.log('❌ خطأ في الاستجابة:', errorResponse);
+
         throw new Error(errorMessage);
       }
 
-      return response.json();
+      const result = await response.json();
+
+      // Save successful response details
+      const responseDetails = {
+        timestamp: new Date().toISOString(),
+        status: response.status,
+        result: result,
+        request: requestDetails
+      };
+      setLastResponse(responseDetails);
+      console.log('✅ استجابة ناجحة:', responseDetails);
+
+      return result;
     } catch (error) {
       clearTimeout(timeout);
       if (error instanceof Error) {
@@ -1230,7 +1253,7 @@ export default function Index() {
                   <li>• "امسح الفقرة الأخيرة"</li>
                   <li>• "احذف كل شيء"</li>
                   <li>• "إزالة النص الأخير"</li>
-                  <li>• "شيل هذا الكلام"</li>
+                  <li>• "شيل هذا ا��كلام"</li>
                 </ul>
               </div>
               <div className="space-y-2">
@@ -1254,7 +1277,7 @@ export default function Index() {
               <div className="space-y-2">
                 <h4 className="font-semibold text-red-600">أو��مر التحكم</h4>
                 <ul className="space-y-1 text-gray-600 dark:text-gray-300">
-                  <li>• "توقف" - إيقاف التسجيل</li>
+                  <li>• "ت��قف" - إيقاف التسجيل</li>
                   <li>• "استمرار" - وضع مستمر</li>
                   <li>• "خلاص" - إنهاء العملية</li>
                   <li>• "كفاية" - إيقاف</li>
