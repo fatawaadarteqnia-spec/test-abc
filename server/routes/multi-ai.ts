@@ -141,7 +141,7 @@ function getEnhancedSystemPrompt(): string {
 فقط نفذ ما يطلبه المستخدم بالضبط - لا تفسر ولا تكمل من عندك.**
 
 ## منهجية التفكير:
-1. فهم النية الأساسية من الكلام
+1. فهم الن��ة الأساسية من الكلام
 2. تحديد الفعل المطلوب (إضافة، حذف، استبدال، إلخ)
 3. تحديد الهدف/الموضع بدقة
 4. تحديد المحتوى المطلوب
@@ -335,7 +335,7 @@ const SYSTEM_PROMPT = `أنت مساعد ذكي متخصص في تحل��ل �
   "explanation": "شرح مختصر"
 }
 
-مهم: لا تستخدم markdown أو أي تنسيق. فقط JSON خام.`;
+مهم: لا تستخدم markdown أو أي ت��سيق. فقط JSON خام.`;
 
 // Try DeepSeek API
 async function tryDeepSeek(text: string, context?: string): Promise<CommandAnalysisResponse | null> {
@@ -446,13 +446,36 @@ async function tryGroq(text: string, context?: string): Promise<CommandAnalysisR
   if (!aiClients.groq) return null;
 
   try {
+    // Special prompt for Groq to ensure clean JSON output
+    const groqSystemPrompt = getEnhancedSystemPrompt() + `
+
+**تعليمات خاصة لـ Groq:**
+- يجب أن تكون الاستجابة JSON صحيح فقط
+- لا تضع أي نص قبل أو بعد JSON
+- لا تستخدم markdown code blocks
+- ابدأ الاستجابة مباشرة بـ {
+- انته الاستجابة مباشرة بـ }
+
+مثال للاستجابة المطلوبة:
+{
+  "thinking": "التفكير هنا",
+  "isCommand": true,
+  "commandType": "insert",
+  "action": "الوصف",
+  "target": "",
+  "content": "المحتوى",
+  "position": "start",
+  "confidence": 1,
+  "explanation": "التفسير"
+}`;
+
     const completion = await aiClients.groq.chat.completions.create({
       model: 'llama-3.1-8b-instant',
       messages: [
-        { role: 'system', content: getEnhancedSystemPrompt() },
-        { role: 'user', content: `��لنص: "${text}"${context ? `\nالسياق: "${context}"` : ''}` }
+        { role: 'system', content: groqSystemPrompt },
+        { role: 'user', content: `النص: "${text}"${context ? `\nالسياق: "${context}"` : ''}` }
       ],
-      temperature: 0.3,
+      temperature: 0.1, // Lower temperature for more consistent output
       max_tokens: 500,
     });
 
@@ -485,7 +508,7 @@ function fallbackAnalysis(text: string): CommandAnalysisResponse {
         action: 'حذف آخر فقرة',
         target: 'last',
         confidence: 0.8,
-        explanation: 'تحليل أساسي - حذف آخر عنصر',
+        explanation: 'تح��يل أساسي - حذف آخر عنصر',
         provider: 'التحليل الأساس��'
       };
     }
@@ -821,7 +844,7 @@ export const testAPIKeyDirect: RequestHandler = async (req, res) => {
             });
             const response = completion.choices[0]?.message?.content;
             if (response) {
-              result = { isCommand: false, commandType: null, action: 'اختبار نجح', confidence: 1, explanation: 'OpenAI يعمل' };
+              result = { isCommand: false, commandType: null, action: 'اختبار ��جح', confidence: 1, explanation: 'OpenAI يعمل' };
               console.log('OpenAI test successful');
             } else {
               console.log('OpenAI returned empty response');
