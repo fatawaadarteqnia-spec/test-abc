@@ -193,7 +193,7 @@ export default function Index() {
       console.log('Manual refresh failed:', error);
       toast({
         title: "فشل التحديث",
-        description: "لم يتمكن من تحديث ��لحال�� - التطبيق يعمل في الوضع الأساسي",
+        description: "لم يتمكن من تحديث ��لحالة - ال��طبيق يعمل في الوضع الأساسي",
         variant: "destructive",
       });
     }
@@ -360,6 +360,19 @@ export default function Index() {
       text,
       context: documentContent.slice(-200) // Last 200 characters for context
     };
+
+    // Save request details for debugging
+    const requestDetails = {
+      timestamp: new Date().toISOString(),
+      text: text,
+      context: documentContent.slice(-200),
+      selectedProvider: selectedProvider,
+      endpoint: selectedProvider === 'auto' ? '/api/analyze-command' : `/api/analyze-with/${selectedProvider}`,
+      fullRequest: requestData
+    };
+    setLastRequest(requestDetails);
+
+    console.log('🚀 طلب جديد للذكاء الاصطناعي:', requestDetails);
 
     // Choose endpoint based on selected provider
     const endpoint = selectedProvider === 'auto'
@@ -1206,7 +1219,7 @@ export default function Index() {
               <p className="text-sm text-blue-800 dark:text-blue-200 arabic-text">
                 <Brain className="w-4 h-4 inline ml-1" />
                 <strong>مع الذكاء الاص��ناعي:</strong> يمكنك استخدام أي صياغة طبيعية باللغة العربية.
-                النظام ��يف��م مقصدك ويحلل الأمر بذكاء.
+                النظام ��يفهم مقصدك ويحلل الأمر بذكاء.
               </p>
             </div>
 
