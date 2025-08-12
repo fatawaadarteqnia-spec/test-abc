@@ -291,7 +291,7 @@ export default function Index() {
       setIsContinuousMode(false);
       toast({
         title: "تم الإيقاف",
-        description: "تم إيقاف التسجيل الصوتي.",
+        description: "تم إ��قاف التسجيل الصوتي.",
       });
       return;
     }
@@ -363,14 +363,29 @@ export default function Index() {
       context: documentContent.slice(-200) // Last 200 characters for context
     };
 
-    // Save request details for debugging
+    // Save detailed request for analysis
     const requestDetails = {
       timestamp: new Date().toISOString(),
       text: text,
       context: documentContent.slice(-200),
       selectedProvider: selectedProvider,
       endpoint: selectedProvider === 'auto' ? '/api/analyze-command' : `/api/analyze-with/${selectedProvider}`,
-      fullRequest: requestData
+      fullRequest: requestData,
+      processingSteps: [
+        'تحليل النص المدخل',
+        'استخراج السياق',
+        'اختيار مقدم الخدمة',
+        'تحضير الطلب',
+        'إرسال للذكاء الاصطناعي'
+      ],
+      preprocessedText: text, // Could be enhanced with actual preprocessing
+      systemPrompt: 'سيتم جلبه من الخادم', // This would need to be fetched
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'User-Agent': navigator.userAgent,
+        'Timestamp': new Date().toISOString()
+      }
     };
     setLastRequest(requestDetails);
 
@@ -675,7 +690,7 @@ export default function Index() {
               } else {
                 console.log('Target not found (before):', analysis.target, 'Adding at end instead');
                 toast({
-                  title: "⚠️ لم أجد اله��ف",
+                  title: "⚠️ لم أجد الهدف",
                   description: `لم أجد "${analysis.target}" في النص. تم الإضافة في النهاية بدلاً من ذلك.`,
                   variant: "destructive",
                 });
