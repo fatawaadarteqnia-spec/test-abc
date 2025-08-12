@@ -268,7 +268,7 @@ export default function Index() {
     } else {
       toast({
         title: "ال��تصفح غير مدعوم",
-        description: "متصفحك لا يدعم التعرف على الصوت. يرجى استخدام Chrome أو Edge.",
+        description: "متصفحك لا يدعم التعر�� على الصوت. يرجى استخدام Chrome أو Edge.",
         variant: "destructive",
       });
     }
@@ -348,7 +348,7 @@ export default function Index() {
 
       toast({
         title: "تم استخدام التحليل الأساسي",
-        description: "فشل الذكاء الاصطناعي، تم استخدام التحليل الأساسي",
+        description: "فشل الذكاء الاصطناعي، تم استخدام التح��يل الأساسي",
         variant: "destructive",
       });
     }
@@ -439,13 +439,18 @@ export default function Index() {
       }
 
       const result = await response.json();
+      const endTime = performance.now();
+      const processingTime = Math.round(endTime - startTime);
 
-      // Save successful response details
+      // Save detailed response
       const responseDetails = {
         timestamp: new Date().toISOString(),
         status: response.status,
         result: result,
-        request: requestDetails
+        request: requestDetails,
+        processingTime: processingTime,
+        headers: Object.fromEntries(response.headers.entries()),
+        rawResponse: JSON.stringify(result, null, 2)
       };
       setLastResponse(responseDetails);
       console.log('✅ استجابة ناجحة:', responseDetails);
@@ -592,7 +597,7 @@ export default function Index() {
                     documentContent.slice(insertPos);
                   targetFound = true;
 
-                  console.log('✅ نجح الإ��راج بين الكلمات في الموضع:', insertPos);
+                  console.log('✅ نجح الإدراج بين الكلمات في الموضع:', insertPos);
                   console.log('📄 النتيجة:', newContent);
                 } else {
                   console.log('❌ لم توجد إحدى الكلمتين:', {
@@ -762,7 +767,7 @@ export default function Index() {
     }
     
     // Add commands
-    if (text.includes('أضف') || text.includes('اكتب')) {
+    if (text.includes('أضف') || text.includes('اكت��')) {
       return { type: 'insert' };
     }
     
@@ -1145,7 +1150,7 @@ export default function Index() {
                   <div className="flex items-center justify-between">
                     <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 arabic-text flex items-center gap-2">
                       <FileText className="w-4 h-4" />
-                      اختبار الأوامر النصية
+                      اختبار الأ��امر النصية
                     </h4>
                     <div className="flex items-center gap-1">
                       <div className={`w-2 h-2 rounded-full ${aiStatus === 'ready' ? 'bg-green-500' : 'bg-gray-400'}`}></div>
@@ -1208,7 +1213,7 @@ export default function Index() {
                           "اكتب بسم الله الرحمن الرحيم",
                           "أضف في البداية الحمد لله",
                           "اكتب بعد كلمة الحمد كلمة لله",
-                          "ض�� قبل كلمة الله كلمة رب"
+                          "ضع قبل كلمة الله كلمة رب"
                         ].map((cmd, idx) => (
                           <Button
                             key={idx}
@@ -1288,7 +1293,7 @@ export default function Index() {
                     size="sm"
                     className="arabic-text"
                   >
-                    مس�� الكل
+                    مس�� الك��
                   </Button>
                 </div>
               </CardHeader>
@@ -1298,7 +1303,7 @@ export default function Index() {
                     value={documentContent}
                     onChange={(e) => setDocumentContent(e.target.value)}
                     className="w-full h-full resize-none border-0 arabic-text arabic-scroll text-lg leading-relaxed"
-                    placeholder="ابدأ الحديث أو اكتب هنا... سيظ��ر النص المُدخل بالصوت هنا تلقائياً"
+                    placeholder="ابدأ الحديث أو اكتب هنا... سيظهر النص المُدخل بالصوت هنا تلقائياً"
                     dir="rtl"
                   />
                 </div>
