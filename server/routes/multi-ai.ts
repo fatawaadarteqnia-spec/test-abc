@@ -170,7 +170,7 @@ function getEnhancedSystemPrompt(): string {
 - تحتوي على معلومات أو محتوى
 - تبدأ بكلمات مثل: "إن"، "كان"، "يذكر"، "نعلم أن"
 - لا تحتوي على أفعال الأمر أو طلبات مباشرة
-- **مثال**: "الحمد لله رب العالمين" = محتوى ليس أمر
+- **مثال**: "الحمد لله رب ا��عالمين" = محتوى ليس أمر
 
 ### ⚡ الأوامر المباشرة:
 - تحتوي على أفعال أمر واضحة: "احذف"، "أضف"، "غير"، "استبدل"
@@ -221,7 +221,7 @@ function getEnhancedSystemPrompt(): string {
 - position: "after"
 
 ### مثال 3: أمر غير مباشر معقد
-**النص**: "أريد أن أرى كلمة البركة في بداية النص وأيضاً كلمة الخير في نهايته"
+**النص**: "أريد أن أرى كلمة البركة في بداية النص وأيضاً ��لمة الخير في نه��يته"
 **التحليل العميق**:
 1. **قراءة شاملة**: طلب معقد بأمرين منفصلين
 2. **تحليل اللغة**: "أريد أن أرى" = طلب غير مباشر للإضافة
@@ -241,7 +241,7 @@ function getEnhancedSystemPrompt(): string {
 - isCommand: true
 - commandType: "insert"
 - target: "start"
-- content: "بسم الله الرحمن الرحيم"
+- content: "بس�� الله الرحمن الرحيم"
 - position: "start"
 
 ### مثال 5: أوامر متعددة في نص واحد
@@ -264,7 +264,7 @@ function getEnhancedSystemPrompt(): string {
 ## 🧠 قواعد الذكاء المتقدم:
 1. **اقرأ النص 3 مرات** قبل اتخاذ القرار
 2. **فكر بصوت عالٍ** في الـ thinking field
-3. **شكّك في فهمك الأول** وأعد التحليل
+3. **ش��ّك في فهمك الأول** وأعد التحليل
 4. **ابحث عن الأوامر المخفية** في النصوص الطويلة
 5. **لا تتسرع** - الدقة أهم من السرعة
 6. **استخدم السياق** لفهم الضمائر والإشارات
@@ -594,7 +594,166 @@ async function tryGroq(text: string, context?: string): Promise<CommandAnalysisR
   return null;
 }
 
-// Fallback analysis
+// Advanced text preprocessing for complex and long texts
+function preprocessComplexText(text: string, context?: string): { processedText: string; analysis: any } {
+  const analysis = {
+    textLength: text.length,
+    isLongText: text.length > 100,
+    hasMultipleCommands: false,
+    commandIndicators: [],
+    contextClues: [],
+    complexity: 'simple'
+  };
+
+  // Analyze text complexity
+  const commandWords = ['أضف', 'احذف', 'استبدل', 'غير', 'ضع', 'اكتب', 'امح', 'بدل', 'حول'];
+  const commandIndicatorWords = ['أريد', 'أحتاج', 'يجب', 'لازم', 'ممكن', 'أود', 'أتمنى'];
+  const positionWords = ['بعد', 'قبل', 'في البداية', 'في النهاية', 'في الوسط', 'هنا', 'هناك'];
+
+  // Count command indicators
+  commandWords.forEach(word => {
+    if (text.includes(word)) {
+      analysis.commandIndicators.push(word);
+    }
+  });
+
+  commandIndicatorWords.forEach(word => {
+    if (text.includes(word)) {
+      analysis.contextClues.push(word);
+    }
+  });
+
+  // Check for multiple commands
+  const commandCount = analysis.commandIndicators.length;
+  if (commandCount > 1) {
+    analysis.hasMultipleCommands = true;
+    analysis.complexity = 'complex';
+  } else if (analysis.textLength > 200) {
+    analysis.complexity = 'long';
+  } else if (analysis.contextClues.length > 0) {
+    analysis.complexity = 'moderate';
+  }
+
+  // Process text based on complexity
+  let processedText = text;
+
+  if (analysis.isLongText) {
+    // For long texts, add structure hints
+    processedText = `[نص طويل - حلل بعناية]\n${text}\n[انتباه: ابحث عن الأوامر المدفونة في النص]`;
+  }
+
+  if (analysis.hasMultipleCommands) {
+    // For multiple commands, add priority guidance
+    processedText = `[أوامر متعددة محتملة - ركز على الأمر الأول والأوضح]\n${processedText}`;
+  }
+
+  if (analysis.complexity === 'complex') {
+    // For complex texts, add detailed analysis request
+    processedText = `[نص معقد - استخدم التحليل العميق المرحلي]\n${processedText}`;
+  }
+
+  return { processedText, analysis };
+}
+
+// Enhanced context analysis
+function analyzeTextContext(text: string, existingContext?: string): string {
+  const contextAnalysis = [];
+
+  // Analyze pronouns and references
+  const pronouns = ['هذا', 'هذه', 'ذلك', 'تلك', 'هنا', 'هناك'];
+  pronouns.forEach(pronoun => {
+    if (text.includes(pronoun)) {
+      contextAnalysis.push(`الضمير "${pronoun}" يحتاج تحديد المرجع`);
+    }
+  });
+
+  // Analyze incomplete references
+  if (text.includes('الكلمة') || text.includes('النص') || text.includes('الجملة')) {
+    contextAnalysis.push('يوجد مراجع غير محددة تحتاج توضيح');
+  }
+
+  // Analyze position indicators
+  const positions = ['في البداية', 'في النهاية', 'في الوسط', 'بعد', 'قبل'];
+  positions.forEach(pos => {
+    if (text.includes(pos)) {
+      contextAnalysis.push(`مؤشر موضع: ${pos}`);
+    }
+  });
+
+  let enhancedContext = existingContext || '';
+  if (contextAnalysis.length > 0) {
+    enhancedContext += `\nتحليل السياق: ${contextAnalysis.join(', ')}`;
+  }
+
+  return enhancedContext;
+}
+
+// Smart command detection and classification
+function detectCommandPatterns(text: string): {
+  isLikelyCommand: boolean;
+  commandType: string | null;
+  confidence: number;
+  reasoning: string[]
+} {
+  const reasoning = [];
+  let confidence = 0;
+  let commandType = null;
+
+  // Direct command patterns
+  const directCommands = {
+    'insert': ['أضف', 'ضع', 'اكتب', 'أدرج'],
+    'delete': ['احذف', 'امح', 'ازل', 'امسح'],
+    'replace': ['استبدل', 'غير', 'بدل', 'حول'],
+    'format': ['نسق', 'رتب', 'نظم']
+  };
+
+  // Indirect command patterns
+  const indirectCommands = ['أريد', 'أحتاج', 'يجب', 'لازم', 'أود', 'أتمنى'];
+
+  // Check for direct commands
+  for (const [type, commands] of Object.entries(directCommands)) {
+    for (const cmd of commands) {
+      if (text.includes(cmd)) {
+        commandType = type;
+        confidence += 0.8;
+        reasoning.push(`وجد أمر مباشر: ${cmd}`);
+      }
+    }
+  }
+
+  // Check for indirect commands
+  for (const cmd of indirectCommands) {
+    if (text.includes(cmd)) {
+      confidence += 0.4;
+      reasoning.push(`وجد مؤشر أمر غير مباشر: ${cmd}`);
+    }
+  }
+
+  // Check for position indicators (enhance command likelihood)
+  const positionIndicators = ['بعد', 'قبل', 'في البداية', 'في النهاية'];
+  for (const pos of positionIndicators) {
+    if (text.includes(pos)) {
+      confidence += 0.3;
+      reasoning.push(`وجد مؤشر موضع: ${pos}`);
+    }
+  }
+
+  // Reduce confidence for informational content
+  const infoIndicators = ['إن', 'كان', 'يذكر', 'نعلم', 'الحمد', 'بسم'];
+  for (const info of infoIndicators) {
+    if (text.includes(info)) {
+      confidence -= 0.2;
+      reasoning.push(`وجد مؤشر محتوى إعلامي: ${info}`);
+    }
+  }
+
+  confidence = Math.max(0, Math.min(1, confidence));
+  const isLikelyCommand = confidence > 0.5;
+
+  return { isLikelyCommand, commandType, confidence, reasoning };
+}
+
+// Fallback analysis with enhanced intelligence
 function fallbackAnalysis(text: string): CommandAnalysisResponse {
   const cleanText = text.toLowerCase().trim();
   
