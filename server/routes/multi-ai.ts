@@ -133,7 +133,7 @@ const initializeAIClients = () => {
 
 // Enhanced system prompt for better natural language understanding
 function getEnhancedSystemPrompt(): string {
-  return `أنت عبقري في تحليل الكلام الطبيعي العربي للتحكم في الوثائق. عملية التحليل تتطلب التفكير المرحلي.
+  return `أنت عبقري في تحليل الكلام الطبيعي العربي للتحكم في الوثائق. عملية التحليل تتطلب التفكير ��لمرحلي.
 
 ## قانون مقدس - لا تخالفه أبداً:
 **ممنوع منعاً باتاً إضافة أي كلمة أو محتوى من عندك.
@@ -266,6 +266,44 @@ function extractJSONFromResponse(text: string): any {
         }
       }
     }
+
+    // NEW: Try to find JSON in plain text (for providers that don't use code blocks)
+    // Look for pattern like "الرد:" followed by JSON
+    const plainJsonMatch = text.match(/(?:الرد:|response:|result:|\{)\s*(\{[\s\S]*?\})/i);
+    if (plainJsonMatch) {
+      try {
+        // Try the captured group first
+        let jsonString = plainJsonMatch[1];
+        if (!jsonString.startsWith('{')) {
+          // If captured group doesn't start with {, use full match
+          jsonString = plainJsonMatch[0];
+          // Remove any prefix text
+          const startBrace = jsonString.indexOf('{');
+          if (startBrace !== -1) {
+            jsonString = jsonString.substring(startBrace);
+          }
+        }
+        return JSON.parse(jsonString);
+      } catch {
+        // Continue to next attempt
+      }
+    }
+
+    // Try to find any valid JSON object in the entire text
+    const allJsonMatches = text.matchAll(/\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\}/g);
+    for (const match of allJsonMatches) {
+      try {
+        const parsed = JSON.parse(match[0]);
+        // Check if it looks like our expected structure
+        if (parsed && typeof parsed === 'object' &&
+            ('isCommand' in parsed || 'commandType' in parsed || 'action' in parsed)) {
+          return parsed;
+        }
+      } catch {
+        continue;
+      }
+    }
+
     throw new Error('No valid JSON found in response');
   }
 }
