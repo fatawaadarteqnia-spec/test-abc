@@ -554,23 +554,51 @@ export default function Index() {
           case 'before':
             if (analysis.target && analysis.target !== 'start' && analysis.target !== 'end') {
               console.log('Looking for target (before):', analysis.target, 'in document:', documentContent);
+
+              let targetFound = false;
+              let newContent = documentContent;
+
+              // First try exact match
               const targetIndex = documentContent.indexOf(analysis.target);
               if (targetIndex !== -1) {
-                // Check if we need to add space after the new content
                 const charBeforeTarget = targetIndex > 0 ? documentContent.charAt(targetIndex - 1) : '';
                 const needsSpaceBefore = charBeforeTarget !== '' && charBeforeTarget !== ' ' && charBeforeTarget !== '\n';
                 const spaceBefore = needsSpaceBefore ? ' ' : '';
 
-                const newContent =
+                newContent =
                   documentContent.slice(0, targetIndex) +
                   spaceBefore + analysis.content + ' ' +
                   documentContent.slice(targetIndex);
-                setDocumentContent(newContent);
+                targetFound = true;
+                console.log('Exact target found (before) at:', targetIndex);
+              } else {
+                // Try partial word matching for "before" commands
+                const words = analysis.target.split(' ');
+                for (const word of words) {
+                  if (word.length > 2) {
+                    const wordIndex = documentContent.indexOf(word);
+                    if (wordIndex !== -1) {
+                      const charBeforeTarget = wordIndex > 0 ? documentContent.charAt(wordIndex - 1) : '';
+                      const needsSpaceBefore = charBeforeTarget !== '' && charBeforeTarget !== ' ' && charBeforeTarget !== '\n';
+                      const spaceBefore = needsSpaceBefore ? ' ' : '';
 
-                console.log('Content updated (before). Target found at:', targetIndex, 'New content:', newContent);
+                      newContent =
+                        documentContent.slice(0, wordIndex) +
+                        spaceBefore + analysis.content + ' ' +
+                        documentContent.slice(wordIndex);
+                      targetFound = true;
+                      console.log('Partial match found (before) for word:', word, 'at:', wordIndex);
+                      break;
+                    }
+                  }
+                }
+              }
+
+              if (targetFound) {
+                setDocumentContent(newContent);
+                console.log('Content updated successfully (before):', newContent);
               } else {
                 console.log('Target not found (before):', analysis.target, 'Adding at end instead');
-                // Target not found, show warning and add at end
                 toast({
                   title: "⚠️ لم أجد الهدف",
                   description: `لم أجد "${analysis.target}" في النص. تم الإضافة في النهاية بدلاً من ذلك.`,
@@ -998,7 +1026,7 @@ export default function Index() {
                         ) : (
                           <>
                             <Play className="w-4 h-4 ml-1" />
-                            تنف��ذ الأمر
+                            تنفيذ الأمر
                           </>
                         )}
                       </Button>
