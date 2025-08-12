@@ -406,6 +406,7 @@ export default function Index() {
 
   const executeAICommand = async (analysis: CommandAnalysisResponse, originalText: string) => {
     console.log('Executing AI command:', analysis);
+    console.log('Original command text:', originalText);
 
     switch (analysis.commandType) {
       case 'delete':
@@ -1018,7 +1019,7 @@ export default function Index() {
                   <div className="flex items-center justify-between">
                     <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 arabic-text flex items-center gap-2">
                       <FileText className="w-4 h-4" />
-                      اختبار الأوامر النصية
+                      اختبار الأوام�� النصية
                     </h4>
                     <div className="flex items-center gap-1">
                       <div className={`w-2 h-2 rounded-full ${aiStatus === 'ready' ? 'bg-green-500' : 'bg-gray-400'}`}></div>
@@ -1073,7 +1074,7 @@ export default function Index() {
 
                   {/* Quick Test Commands */}
                   <div className="space-y-2">
-                    <div className="text-xs text-gray-500 arabic-text">أوامر سريعة للاختبار:</div>
+                    <div className="text-xs text-gray-500 arabic-text">أوامر سريع�� للاختبار:</div>
                     <div className="space-y-1">
                       <div className="text-xs text-gray-400 arabic-text">أوامر الإضافة:</div>
                       <div className="flex flex-wrap gap-1">
