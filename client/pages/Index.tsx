@@ -190,7 +190,7 @@ export default function Index() {
       console.log('Manual refresh failed:', error);
       toast({
         title: "فشل التحديث",
-        description: "لم يتمكن من تحديث الحالة - التطبيق يعمل في الوضع الأساسي",
+        description: "لم يتمكن من تحديث ��لحالة - التطبيق يعمل في الوضع الأساسي",
         variant: "destructive",
       });
     }
@@ -247,7 +247,7 @@ export default function Index() {
         setIsListening(false);
         toast({
           title: "خطأ في التعرف على الصوت",
-          description: "حدث خطأ أثناء التعرف على الصوت. يرجى المحاولة م��ة أخرى.",
+          description: "حدث خطأ أثناء التعرف على الصوت. يرجى المحاولة مرة أخرى.",
           variant: "destructive",
         });
       };
@@ -472,7 +472,10 @@ export default function Index() {
                 // Advanced: Check if this is a "between X and Y" command
               // Look for patterns in original command or explanation
               const betweenPatterns = [
-                /بين\s+كلمة\s+(.+?)\s+وكلمة\s+(.+?)\s+(?:اكتب|أضف|ضع)\s+(?:كلمة\s+)?(.+?)(?:\s|$)/,
+                /بين\s+كلمة\s+(.+?)\s+وكلمة\s+(.+?)\s+(?:اكتب|أضف|ضع)\s+(?:كلمة\s+)?(.+?)(?:\s|$|\.)/,
+                /بين\s+كلمة\s+(.+?)\s+و\s*كلمة\s+(.+?)\s+(.+?)(?:\s|$|\.)/,
+                /بين\s+(.+?)\s+وكلمة\s+(.+?)\s+(?:اكتب|أضف|ضع)\s+(?:كلمة\s+)?(.+?)(?:\s|$|\.)/,
+                /بين\s+(.+?)\s+و\s*(.+?)\s+(?:اكتب|أضف|ضع)\s+(.+?)(?:\s|$|\.)/,
                 /بين\s+(.+?)\s+و\s*(.+?)(?:\s|$)/
               ];
 
@@ -1099,7 +1102,7 @@ export default function Index() {
                       <div className="text-xs text-gray-400 arabic-text">أوامر الاستبدال:</div>
                       <div className="flex flex-wrap gap-1">
                         {[
-                          "استبدل كلمة بسم بكلمة ��اسم",
+                          "استبدل كلمة بسم بكلمة باسم",
                           "غي�� كلمة الله إلى الله تعالى"
                         ].map((cmd, idx) => (
                           <Button
@@ -1200,7 +1203,7 @@ export default function Index() {
               <p className="text-sm text-blue-800 dark:text-blue-200 arabic-text">
                 <Brain className="w-4 h-4 inline ml-1" />
                 <strong>مع الذكاء الاص��ناعي:</strong> يمكنك استخدام أي صياغة طبيعية باللغة العربية.
-                النظام سيفهم مقصدك ويحلل الأمر بذكاء.
+                النظام ��يفهم مقصدك ويحلل الأمر بذكاء.
               </p>
             </div>
 
