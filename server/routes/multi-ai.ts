@@ -142,7 +142,7 @@ function getEnhancedSystemPrompt(): string {
 
 ### 🔍 المرحلة 1: التحليل الأولي العميق
 1. **قراءة شاملة**: اقرأ النص كاملاً عدة مرات لفهم السياق العام
-2. **تحليل اللغة**: حدد الأفعال، الأسماء، المفاعيل، وأدوات الربط
+2. **تحليل اللغة**: حدد الأفعال، الأسم��ء، المفاعيل، وأدوات الربط
 3. **فهم النية**: ما الهدف الحقيقي من هذا النص؟
 4. **كشف الأوامر المخفية**: هل يو��د أوامر ضمنية غير مباشرة؟
 
@@ -161,7 +161,7 @@ function getEnhancedSystemPrompt(): string {
 ### 🧩 المرحلة 4: حل التعقيدات
 1. **النصوص الطويلة**: قسم النص لوحدات منطقية صغيرة
 2. **الأوامر المتعددة**: حدد كل أمر منفصل
-3. **التناقضات**: حل التناقضات باختيار الأمر الأوضح
+3. **التن��قضات**: حل التناقضات باختيار الأمر الأوضح
 4. **الغموض**: اطلب توضيح إذا كان الأمر غامضاً جداً
 
 ## 🔍 ت��ليل أنواع النصوص:
@@ -250,7 +250,7 @@ function getEnhancedSystemPrompt(): string {
 1. **تحديد الأوامر المتعددة**:
    - أمر 1: "احذف كلمة الأولى"
    - أمر 2: "استبدل كلمة النهاية بكلمة الختام"
-   - أمر 3: "أضف في المنتصف كلمة الوسط"
+   - أمر 3: "أضف في المنتص�� كلمة الوسط"
 2. **اختيار الأولوية**: اختر الأمر الأول والأوضح
 **النتيجة**: نفذ الأمر الأول (حذف) مع confidence معتدل
 
@@ -279,7 +279,7 @@ function getEnhancedSystemPrompt(): string {
 5. ��لمنطق: يصبح أول نص في الوثيقة
 
 الرد: target: "start", content: "بسم الله", position: "start"
-**مهم: content يحتوي فقط على "بسم الله" - لا إضافات**
+**مهم: content يح��وي فقط على "بسم الله" - لا إضافات**
 
 ## قوانين دقة البحث:
 - عند البحث عن "الحمد لله" ابحث عن هذا النص بالضبط
@@ -419,7 +419,7 @@ const SYSTEM_PROMPT = `أنت مساعد ذكي متخصص في تحل��ل �
 أنواع الأوامر:
 - delete: أوامر الحذف (امسح، احذف، إزالة، شيل)
 - insert: أوامر الإضافة (أضف، اكتب، ضع)
-- replace: أوامر الاستبدال (استبدل، غير، بدّل)
+- replace: أوامر الاستب��ال (استبدل، غير، بدّل)
 - format: أوامر التنسيق (عنوان، رأس، فقرة، قائمة)
 - control: أوامر التحكم (توقف، استمرار، حفظ، خ��اص، كفاية)
 
@@ -944,6 +944,25 @@ export const analyzeCommandMultiAI: RequestHandler = async (req, res) => {
       });
     }
 
+    // Step 1: Advanced text preprocessing
+    const { processedText, analysis } = preprocessComplexText(text, context);
+    console.log('📊 تحليل تعقيد النص:', analysis);
+
+    // Step 2: Enhanced context analysis
+    const enhancedContext = analyzeTextContext(text, context);
+    console.log('🔍 تحليل السياق المحسّن:', enhancedContext);
+
+    // Step 3: Smart pre-filtering
+    const preDetection = detectCommandPatterns(text);
+    console.log('⚡ كشف أولي للأوامر:', preDetection);
+
+    // If very low command probability, skip AI and use smart fallback
+    if (preDetection.confidence < 0.3 && !preDetection.isLikelyCommand) {
+      console.log('📝 نص عادي - تخطي الذكاء الاصطناعي');
+      const fallbackResult = fallbackAnalysis(text);
+      return res.json(fallbackResult);
+    }
+
     // Get available providers sorted by priority
     const currentProviders = getAIProviders();
     const availableProviders = currentProviders
@@ -952,28 +971,43 @@ export const analyzeCommandMultiAI: RequestHandler = async (req, res) => {
 
     console.log(`🤖 Available AI providers: ${availableProviders.map(p => p.displayName).join(', ')}`);
 
-    // Try each provider in order
+    // Try each provider in order with enhanced input
     for (const provider of availableProviders) {
       let result: CommandAnalysisResponse | null = null;
 
+      console.log(`🧠 محاولة ${provider.displayName} مع نص معالج متقدم...`);
+
       switch (provider.name) {
         case 'deepseek':
-          result = await tryDeepSeek(text, context);
+          result = await tryDeepSeek(processedText, enhancedContext);
           break;
         case 'gemini':
-          result = await tryGemini(text, context);
+          result = await tryGemini(processedText, enhancedContext);
           break;
         case 'openai':
-          result = await tryOpenAI(text, context);
+          result = await tryOpenAI(processedText, enhancedContext);
           break;
         case 'groq':
-          result = await tryGroq(text, context);
+          result = await tryGroq(processedText, enhancedContext);
           break;
       }
 
-      if (result && result.confidence >= 0.7) {
-        console.log(`�� Success with ${provider.displayName}`);
-        return res.json(result);
+      if (result) {
+        // Enhance result with preprocessing insights
+        result.explanation += ` | تعقيد: ${analysis.complexity}`;
+        if (analysis.hasMultipleCommands) {
+          result.explanation += ' | أوامر متعددة محتملة';
+        }
+
+        // Adjust confidence based on preprocessing analysis
+        if (analysis.complexity === 'complex') {
+          result.confidence = Math.max(0.5, result.confidence - 0.1);
+        }
+
+        if (result.confidence >= 0.6) { // Lower threshold for enhanced analysis
+          console.log(`✅ نجح مع ${provider.displayName} (ثقة: ${result.confidence})`);
+          return res.json(result);
+        }
       }
     }
 
