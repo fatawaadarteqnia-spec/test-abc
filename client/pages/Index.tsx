@@ -291,7 +291,7 @@ export default function Index() {
       setIsContinuousMode(false);
       toast({
         title: "تم الإيقاف",
-        description: "تم إ��قاف التسجيل الصوتي.",
+        description: "تم إيقاف التسجيل الصوتي.",
       });
       return;
     }
@@ -399,6 +399,9 @@ export default function Index() {
     // Add timeout to AI requests
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+
+    // Record start time for performance measurement
+    const startTime = performance.now();
 
     try {
       const response = await fetch(endpoint, {
@@ -589,7 +592,7 @@ export default function Index() {
                     documentContent.slice(insertPos);
                   targetFound = true;
 
-                  console.log('✅ نجح الإدراج بين الكلمات في الموضع:', insertPos);
+                  console.log('✅ نجح الإ��راج بين الكلمات في الموضع:', insertPos);
                   console.log('📄 النتيجة:', newContent);
                 } else {
                   console.log('❌ لم توجد إحدى الكلمتين:', {
@@ -1205,7 +1208,7 @@ export default function Index() {
                           "اكتب بسم الله الرحمن الرحيم",
                           "أضف في البداية الحمد لله",
                           "اكتب بعد كلمة الحمد كلمة لله",
-                          "ضع قبل كلمة الله كلمة رب"
+                          "ض�� قبل كلمة الله كلمة رب"
                         ].map((cmd, idx) => (
                           <Button
                             key={idx}
@@ -1295,7 +1298,7 @@ export default function Index() {
                     value={documentContent}
                     onChange={(e) => setDocumentContent(e.target.value)}
                     className="w-full h-full resize-none border-0 arabic-text arabic-scroll text-lg leading-relaxed"
-                    placeholder="ابدأ الحديث أو اكتب هنا... سيظهر النص المُدخل بالصوت هنا تلقائياً"
+                    placeholder="ابدأ الحديث أو اكتب هنا... سيظ��ر النص المُدخل بالصوت هنا تلقائياً"
                     dir="rtl"
                   />
                 </div>
